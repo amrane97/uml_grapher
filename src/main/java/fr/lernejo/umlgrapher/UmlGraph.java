@@ -2,7 +2,7 @@ package fr.lernejo.umlgrapher;
 
 public class UmlGraph {
 
-    Class c;
+    private Class c;
 
     public UmlGraph(Class<?> machinClass) {
         this.c = machinClass;
