@@ -1,5 +1,9 @@
 package fr.lernejo.umlgrapher;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
+
 import java.util.*;
 
 public class UmlType {
@@ -20,10 +24,25 @@ public class UmlType {
         while(!queue.isEmpty()) {
             Class<?> clazz = queue.poll();
             this.classes.add(clazz);
-            this.classes.addAll(Arrays.asList(clazz.getInterfaces()));
+            queue.addAll(Arrays.asList(clazz.getInterfaces()));
             if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)) {
                 queue.add(clazz.getSuperclass());
             }
+            List<Class<?>> notAlreadyPresentClasses = this.getChildrenClasses(clazz)
+                .stream().filter(cls -> !this.classes.contains(cls)).toList();
+            queue.addAll(notAlreadyPresentClasses);
         }
+    }
+
+    private Set<Class<?>> getChildrenClasses(Class<?> clazz) {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+            .forPackage("")
+            .forPackage("", clazz.getClassLoader())
+        );
+        return reflections.get(
+            Scanners.SubTypes
+                .get(clazz)
+                .asClass(this.getClass().getClassLoader(), clazz.getClassLoader())
+        );
     }
 }

@@ -8,12 +8,21 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 public class UmlGraphTests {
-
-
-
     @Test
-    void empty_interface_with_no_relation() {
-
+    void test_when_interface_with_no_relatio() {
+        UmlGraph graph = new UmlGraph(new Class[]{
+            Machin.class
+        });
+        String output = graph.as(GraphType.Mermaid);
+        Assertions.assertThat(output).isEqualTo("""
+            classDiagram
+            class Machin{
+                <<interface>>
+            }
+            """);
+    }
+    @Test
+    void test_parent_relation() {
         UmlGraph graph = new UmlGraph(new Class[]{
             Living.Plant.Tree.Alder.class,
             Living.Animal.Ant.class,
@@ -31,10 +40,52 @@ public class UmlGraphTests {
             }
             class Ant
             class Cat
+            class Living{
+                <<interface>>
+            }
+            class Plant{
+                <<interface>>
+            }
             class Tree{
                 <<interface>>
             }
             Alder  <|.. Tree : implements
+            Plant  <|.. Living : implements
+            Animal  <|.. Living : implements
+            Ant  <|.. Animal : implements
+            Cat  <|.. Animal : implements
+            Tree  <|.. Plant : implements
+            """);
+    }
+
+    @Test
+    void test_parent_and_children_relation() {
+        UmlGraph graph = new UmlGraph(new Class[]{
+            Living.class
+        });
+        //System.out.println(Machin.class);
+
+        String output = graph.as(GraphType.Mermaid);
+
+        Assertions.assertThat(output).isEqualTo("""
+            classDiagram
+            class Alder
+            class Animal{
+                <<interface>>
+            }
+            class Ant
+            class Cat
+            class Living{
+                <<interface>>
+            }
+            class Plant{
+                <<interface>>
+            }
+            class Tree{
+                <<interface>>
+            }
+            Alder  <|.. Tree : implements
+            Plant  <|.. Living : implements
             Animal  <|.. Living : implements
             Ant  <|.. Animal : implements
             Cat  <|.. Animal : implements
@@ -57,5 +108,9 @@ public class UmlGraphTests {
                 }
             }
         }
+    }
+
+    public interface Machin {
+
     }
 }
