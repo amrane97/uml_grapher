@@ -2,21 +2,22 @@ package fr.lernejo.umlgrapher;
 
 public class UmlGraph {
 
-    private Class c;
+    private Class[] classes;
 
-    public UmlGraph(Class<?> machinClass) {
-        this.c = machinClass;
+    public UmlGraph(Class<?>[] classes) {
+        this.classes = classes;
     }
 
     public String as(GraphType graphType) {
 
-        //le code ici
+        InternalGraphRepresentation graphRepresentation = new InternalGraphRepresentation(this.classes);
 
-        return """
-            classDiagram
-            class Machin {
-                <<interface>>
-            }
-            """;
+        if (graphType == GraphType.Mermaid) {
+            return MermaidFormatter.format(graphRepresentation);
+        }else {
+            throw new RuntimeException("graph type inconnu");
+        }
+
+
     }
 }
